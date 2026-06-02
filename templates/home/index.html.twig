@@ -1,0 +1,190 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Patch Fix - Report local problems. Track real fixes.{% endblock %}
+
+{% block body %}
+<section class="pf-hero">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+                <div class="mb-3">
+                    <span class="pf-badge status-verified">Community infrastructure</span>
+                </div>
+
+                <h1 class="pf-hero-title mb-4">
+                    Report local problems. Track real fixes.
+                </h1>
+
+                <p class="pf-hero-subtitle mb-4">
+                    Patch Fix helps residents document civic problems, confirm recurring issues, and follow repairs from first report to final resolution.
+                </p>
+
+                <div class="d-flex flex-column flex-sm-row gap-3">
+                    <a href="/issues/new" class="pf-btn-accent">Report an Issue</a>
+                    <a href="/issues" class="pf-btn-outline">Browse Issues</a>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="pf-card p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <div class="pf-label">Community snapshot</div>
+                            <h2 class="h4 fw-bold mt-1 mb-0">Local issues in motion</h2>
+                        </div>
+                        <span class="pf-badge status-in-progress">Active</span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="pf-stat-card">
+                                <div class="pf-stat-value">128</div>
+                                <div class="pf-stat-label">Reports submitted</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="pf-stat-card">
+                                <div class="pf-stat-value">84</div>
+                                <div class="pf-stat-label">Verified issues</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="pf-stat-card">
+                                <div class="pf-stat-value">39</div>
+                                <div class="pf-stat-label">Resolved fixes</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="pf-stat-card">
+                                <div class="pf-stat-value">12</div>
+                                <div class="pf-stat-label">Active volunteers</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pf-divider my-4"></div>
+
+                    <div>
+                        <div class="pf-label mb-2">Current priority</div>
+                        <p class="mb-0">
+                            Drainage and waste reports are receiving the highest number of community confirmations this week.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="how-it-works" class="pf-section pt-3">
+    <div class="container">
+        <div class="row align-items-end mb-4">
+            <div class="col-lg-7">
+                <div class="pf-label mb-2">How it works</div>
+                <h2 class="pf-page-title mb-2">A clear path from report to repair.</h2>
+            </div>
+            <div class="col-lg-5">
+                <p class="pf-muted mb-0">
+                    Patch Fix keeps the workflow simple: residents report problems, the community confirms them, and responsible people track progress openly.
+                </p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="pf-soft-card p-4 h-100">
+                    <div class="pf-icon-box mb-3">1</div>
+                    <h3 class="pf-h3 mb-3">Report the issue</h3>
+                    <p class="pf-muted mb-0">
+                        Submit a clear report with the location, category, priority, and description of the problem.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="pf-soft-card p-4 h-100">
+                    <div class="pf-icon-box mb-3">2</div>
+                    <h3 class="pf-h3 mb-3">Confirm what matters</h3>
+                    <p class="pf-muted mb-0">
+                        People nearby can confirm existing reports, helping repeated and urgent issues rise to the top.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="pf-soft-card p-4 h-100">
+                    <div class="pf-icon-box mb-3">3</div>
+                    <h3 class="pf-h3 mb-3">Track the fix</h3>
+                    <p class="pf-muted mb-0">
+                        Moderators and volunteers update the status so the community can see what is happening.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="pf-section">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+            <div>
+                <div class="pf-label mb-2">Recent reports</div>
+                <h2 class="pf-page-title mb-2">Issues recently submitted.</h2>
+                <p class="pf-muted mb-0">A quick look at problems currently being tracked by the community.</p>
+            </div>
+
+            <a href="/issues" class="pf-btn-outline">View all issues</a>
+        </div>
+
+        <div class="row g-4">
+            {% for issue in recentIssues %}
+                <div class="col-md-4">
+                    <div class="pf-card pf-issue-card p-4 h-100">
+                        <div class="d-flex justify-content-between gap-2 mb-3">
+                            <span class="pf-badge status-{{ issue.status|replace({'_': '-'}) }}">
+                                {{ issue.status|replace({'_': ' '}) }}
+                            </span>
+                            <span class="pf-badge priority-{{ issue.priority }}">
+                                {{ issue.priority }}
+                            </span>
+                        </div>
+
+                        <h3 class="pf-h3 mb-2">{{ issue.title }}</h3>
+
+                        <p class="pf-muted mb-3">
+                            {{ issue.category }} · {{ issue.area }}
+                        </p>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="small pf-muted">{{ issue.confirmations }} confirmations</span>
+                            <a href="/issues/1" class="fw-bold">View</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section id="community" class="pf-section pt-3">
+    <div class="container">
+        <div class="pf-bg-ink rounded-4 p-4 p-lg-5">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <div class="pf-label mb-2" style="color: #D1D5DB;">Community role</div>
+                    <h2 class="pf-page-title mb-3">Better reporting creates better accountability.</h2>
+                    <p class="mb-0" style="color: #D1D5DB;">
+                        Patch Fix gives residents a shared record of local issues, making it easier to see what needs attention and what has already been addressed.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a href="/issues/new" class="pf-btn-accent">Start a report</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
