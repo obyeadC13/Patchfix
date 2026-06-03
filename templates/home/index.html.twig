@@ -38,28 +38,28 @@
                     <div class="row g-3">
                         <div class="col-6">
                             <div class="pf-stat-card">
-                                <div class="pf-stat-value">128</div>
+                                <div class="pf-stat-value">{{ stats.reports_submitted }}</div>
                                 <div class="pf-stat-label">Reports submitted</div>
                             </div>
                         </div>
 
                         <div class="col-6">
                             <div class="pf-stat-card">
-                                <div class="pf-stat-value">84</div>
+                                <div class="pf-stat-value">{{ stats.verified_issues }}</div>
                                 <div class="pf-stat-label">Verified issues</div>
                             </div>
                         </div>
 
                         <div class="col-6">
                             <div class="pf-stat-card">
-                                <div class="pf-stat-value">39</div>
+                                <div class="pf-stat-value">{{ stats.resolved_fixes }}</div>
                                 <div class="pf-stat-label">Resolved fixes</div>
                             </div>
                         </div>
 
                         <div class="col-6">
                             <div class="pf-stat-card">
-                                <div class="pf-stat-value">12</div>
+                                <div class="pf-stat-value">{{ stats.active_volunteers }}</div>
                                 <div class="pf-stat-label">Active volunteers</div>
                             </div>
                         </div>
@@ -69,9 +69,17 @@
 
                     <div>
                         <div class="pf-label mb-2">Current priority</div>
-                        <p class="mb-0">
-                            Drainage and waste reports are receiving the highest number of community confirmations this week.
-                        </p>
+
+                        {% if priorityFocus %}
+                            <p class="mb-0">
+                                {{ priorityFocus.category_name }} reports are receiving the highest attention right now,
+                                with {{ priorityFocus.total_confirmations }} community confirmations across {{ priorityFocus.issue_count }} active issue{% if priorityFocus.issue_count != 1 %}s{% endif %}.
+                            </p>
+                        {% else %}
+                            <p class="mb-0">
+                                No active issue trends yet. New reports will appear here as the community starts submitting data.
+                            </p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -139,33 +147,50 @@
             <a href="/issues" class="pf-btn-outline">View all issues</a>
         </div>
 
-        <div class="row g-4">
-            {% for issue in recentIssues %}
-                <div class="col-md-4">
-                    <div class="pf-card pf-issue-card p-4 h-100">
-                        <div class="d-flex justify-content-between gap-2 mb-3">
-                            <span class="pf-badge status-{{ issue.status|replace({'_': '-'}) }}">
-                                {{ issue.status|replace({'_': ' '}) }}
-                            </span>
-                            <span class="pf-badge priority-{{ issue.priority }}">
-                                {{ issue.priority }}
-                            </span>
-                        </div>
+        {% if recentIssues is empty %}
+            <div class="pf-card p-5 text-center">
+                <h3 class="pf-h3 mb-2">No reports yet.</h3>
+                <p class="pf-muted mb-4">Once reports are submitted, the latest ones will appear here.</p>
+                <a href="/issues/new" class="pf-btn-accent">Report the first issue</a>
+            </div>
+        {% else %}
+            <div class="row g-4">
+                {% for issue in recentIssues %}
+                    <div class="col-md-4">
+                        <div class="pf-card pf-issue-card p-4 h-100">
+                            <div class="d-flex justify-content-between gap-2 mb-3">
+                                <span class="pf-badge status-{{ issue.status|replace({'_': '-'}) }}">
+                                    {{ issue.status|replace({'_': ' '}) }}
+                                </span>
+                                <span class="pf-badge priority-{{ issue.priority }}">
+                                    {{ issue.priority }}
+                                </span>
+                            </div>
 
-                        <h3 class="pf-h3 mb-2">{{ issue.title }}</h3>
+                            <div class="small pf-muted mb-2">{{ issue.report_reference }}</div>
 
-                        <p class="pf-muted mb-3">
-                            {{ issue.category }} · {{ issue.area }}
-                        </p>
+                            <h3 class="pf-h3 mb-2">{{ issue.title }}</h3>
 
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="small pf-muted">{{ issue.confirmations }} confirmations</span>
-                            <a href="/issues/1" class="fw-bold">View</a>
+                            <p class="pf-muted mb-3">
+                                {{ issue.category_name }} · {{ issue.upazila_name }}
+                                {% if issue.local_area_name %}
+                                    · {{ issue.local_area_name }}
+                                {% endif %}
+                            </p>
+
+                            <p class="pf-muted mb-4">
+                                {{ issue.description|slice(0, 110) }}{% if issue.description|length > 110 %}...{% endif %}
+                            </p>
+
+                            <div class="d-flex justify-content-between align-items-center mt-auto">
+                                <span class="small pf-muted">{{ issue.confirmation_count }} confirmations</span>
+                                <a href="/issues/{{ issue.id }}" class="fw-bold">View</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 </section>
 
@@ -174,12 +199,24 @@
         <div class="pf-bg-ink rounded-4 p-4 p-lg-5">
             <div class="row align-items-center g-4">
                 <div class="col-lg-8">
-                    <div class="pf-label mb-2" style="color: #D1D5DB;">Community role</div>
-                    <h2 class="pf-page-title mb-3">Better reporting creates better accountability.</h2>
-                    <p class="mb-0" style="color: #D1D5DB;">
-                        Patch Fix gives residents a shared record of local issues, making it easier to see what needs attention and what has already been addressed.
-                    </p>
+                    <div class="pf-label mb-2" style="color: #D1D5DB;">Active areas</div>
+
+                    {% if activeAreas is empty %}
+                        <h2 class="pf-page-title mb-3">Better reporting creates better accountability.</h2>
+                        <p class="mb-0" style="color: #D1D5DB;">
+                            Patch Fix gives residents a shared record of local issues, making it easier to see what needs attention and what has already been addressed.
+                        </p>
+                    {% else %}
+                        <h2 class="pf-page-title mb-3">Where reports are active right now.</h2>
+                        <p class="mb-0" style="color: #D1D5DB;">
+                            {% for area in activeAreas %}
+                                {{ area.upazila_name }}, {{ area.district_name }}{% if not loop.last %} · {% endif %}
+                            {% endfor %}
+                            are currently showing the most active reports in the system.
+                        </p>
+                    {% endif %}
                 </div>
+
                 <div class="col-lg-4 text-lg-end">
                     <a href="/issues/new" class="pf-btn-accent">Start a report</a>
                 </div>
