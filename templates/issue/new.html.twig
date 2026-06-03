@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Report Issue - Patch Fix{% endblock %}
+
+{% block body %}
+<section class="pf-section">
+    <div class="container">
+        <div class="pf-form-card">
+            <div class="text-center mb-4">
+                <span class="pf-badge status-verified mb-3">New report</span>
+                <h1 class="pf-page-title mb-2">Report a local issue</h1>
+                <p class="pf-muted mb-0">
+                    The full report form is the next page we will build.
+                </p>
+            </div>
+
+            <div class="pf-card p-5 text-center">
+                <h2 class="pf-h2 mb-3">Issue reporting form coming next.</h2>
+                <p class="pf-muted mb-4">
+                    We already connected the issue listing to the database. Next, this page will save new reports into Railway Postgres.
+                </p>
+
+                <a href="{{ path('app_issues') }}" class="pf-btn-outline">Back to issues</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

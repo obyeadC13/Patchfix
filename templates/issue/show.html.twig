@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ issue.title }} - Patch Fix{% endblock %}
+
+{% block body %}
+<section class="pf-section">
+    <div class="container">
+        <div class="mb-4">
+            <a href="{{ path('app_issues') }}" class="fw-bold">← Back to issues</a>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="pf-card p-4 p-lg-5">
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="pf-badge status-{{ issue.status|replace({'_': '-'}) }}">
+                            {{ issue.status|replace({'_': ' '})|title }}
+                        </span>
+
+                        <span class="pf-badge priority-{{ issue.priority }}">
+                            {{ issue.priority|title }}
+                        </span>
+                    </div>
+
+                    <div class="small pf-muted mb-2">{{ issue.report_reference }}</div>
+
+                    <h1 class="pf-page-title mb-3">{{ issue.title }}</h1>
+
+                    <p class="pf-muted mb-4">
+                        {{ issue.category_name }} ·
+                        {{ issue.division_name }} ·
+                        {{ issue.district_name }} ·
+                        {{ issue.upazila_name }}
+
+                        {% if issue.local_area_name %}
+                            · {{ issue.local_area_name }}
+                        {% endif %}
+                    </p>
+
+                    <div class="pf-soft-card p-4">
+                        <div class="pf-label mb-2">Issue description</div>
+                        <p class="mb-0">{{ issue.description }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="pf-card p-4">
+                    <h2 class="h5 fw-bold mb-3">Issue summary</h2>
+
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="pf-muted">Status</span>
+                        <span class="fw-bold">{{ issue.status|replace({'_': ' '})|title }}</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="pf-muted">Priority</span>
+                        <span class="fw-bold">{{ issue.priority|title }}</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span class="pf-muted">Confirmations</span>
+                        <span class="fw-bold">{{ issue.confirmation_count }}</span>
+                    </div>
+
+                    <div class="pt-3">
+                        <div class="pf-label mb-1">Address</div>
+                        <p class="mb-0">{{ issue.address_text }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
