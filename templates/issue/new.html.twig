@@ -3,26 +3,188 @@
 {% block title %}Report Issue - Patch Fix{% endblock %}
 
 {% block body %}
-<section class="pf-section">
-    <div class="container">
-        <div class="pf-form-card">
-            <div class="text-center mb-4">
-                <span class="pf-badge status-verified mb-3">New report</span>
-                <h1 class="pf-page-title mb-2">Report a local issue</h1>
-                <p class="pf-muted mb-0">
-                    The full report form is the next page we will build.
-                </p>
-            </div>
+    <section class="pf-section">
+        <div class="container">
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger rounded-4 mb-4">{{ message }}</div>
+            {% endfor %}
 
-            <div class="pf-card p-5 text-center">
-                <h2 class="pf-h2 mb-3">Issue reporting form coming next.</h2>
-                <p class="pf-muted mb-4">
-                    We already connected the issue listing to the database. Next, this page will save new reports into Railway Postgres.
-                </p>
+            <div class="pf-form-card">
+                <div class="text-center mb-4">
+                    <span class="pf-badge status-verified mb-3">New report</span>
+                    <h1 class="pf-page-title mb-2">Report a local issue</h1>
+                    <p class="pf-muted mb-0">
+                        Submit a clear report so the community can verify it and track progress.
+                    </p>
+                </div>
 
-                <a href="{{ path('app_issues') }}" class="pf-btn-outline">Back to issues</a>
+                <div class="pf-card p-4 p-lg-5">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="title" class="form-label fw-bold">Issue title</label>
+                            <input
+                                type="text"
+                                id="title"
+                                name="title"
+                                class="form-control"
+                                placeholder="Example: Blocked drain near Road 12"
+                                required
+                            >
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="category_id" class="form-label fw-bold">Category</label>
+                                <select id="category_id" name="category_id" class="form-select" required>
+                                    <option value="">Choose category</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="priority" class="form-label fw-bold">Priority</label>
+                                <select id="priority" name="priority" class="form-select" required>
+                                    <option value="normal">Normal</option>
+                                    <option value="low">Low</option>
+                                    <option value="high">High</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-6">
+                                <label for="division_id" class="form-label fw-bold">Division</label>
+                                <select id="division_id" name="division_id" class="form-select" required>
+                                    <option value="">Choose division</option>
+                                    {% for division in divisions %}
+                                        <option value="{{ division.id }}">{{ division.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="district_id" class="form-label fw-bold">District</label>
+                                <select id="district_id" name="district_id" class="form-select" required>
+                                    <option value="">Choose district</option>
+                                    {% for district in districts %}
+                                        <option value="{{ district.id }}" data-division="{{ district.division_id }}">
+                                            {{ district.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-6">
+                                <label for="upazila_id" class="form-label fw-bold">Upazila / Thana</label>
+                                <select id="upazila_id" name="upazila_id" class="form-select" required>
+                                    <option value="">Choose upazila or thana</option>
+                                    {% for upazila in upazilas %}
+                                        <option value="{{ upazila.id }}" data-district="{{ upazila.district_id }}">
+                                            {{ upazila.name }}{% if upazila.type %} · {{ upazila.type|title }}{% endif %}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="local_area_id" class="form-label fw-bold">Local area</label>
+                                <select id="local_area_id" name="local_area_id" class="form-select">
+                                    <option value="">Choose local area</option>
+                                    {% for localArea in localAreas %}
+                                        <option value="{{ localArea.id }}" data-upazila="{{ localArea.upazila_id }}">
+                                            {{ localArea.name }}{% if localArea.type %} · {{ localArea.type|title }}{% endif %}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 mt-3">
+                            <label for="address_text" class="form-label fw-bold">Address or location details</label>
+                            <input
+                                type="text"
+                                id="address_text"
+                                name="address_text"
+                                class="form-control"
+                                placeholder="Example: Road 12, beside the pharmacy"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="description" class="form-label fw-bold">Description</label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                class="form-control"
+                                rows="6"
+                                placeholder="Describe what happened, how long it has been there, and how it affects the area."
+                                required
+                            ></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Photo evidence</label>
+                            <div class="p-4 text-center pf-soft-card">
+                                <div class="pf-muted">
+                                    Photo upload will be added after the core reporting workflow is complete.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-end">
+                            <a href="{{ path('app_issues') }}" class="pf-btn-outline">Cancel</a>
+                            <button type="submit" class="pf-btn-accent">Submit Report</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+
+    <script>
+        const divisionSelect = document.getElementById('division_id');
+        const districtSelect = document.getElementById('district_id');
+        const upazilaSelect = document.getElementById('upazila_id');
+        const localAreaSelect = document.getElementById('local_area_id');
+
+        function filterSelect(select, dataName, parentValue) {
+            const options = select.querySelectorAll('option');
+
+            options.forEach((option) => {
+                if (!option.value) {
+                    option.hidden = false;
+                    return;
+                }
+
+                option.hidden = option.dataset[dataName] !== parentValue;
+            });
+
+            select.value = '';
+        }
+
+        divisionSelect.addEventListener('change', function () {
+            filterSelect(districtSelect, 'division', this.value);
+            filterSelect(upazilaSelect, 'district', '');
+            filterSelect(localAreaSelect, 'upazila', '');
+        });
+
+        districtSelect.addEventListener('change', function () {
+            filterSelect(upazilaSelect, 'district', this.value);
+            filterSelect(localAreaSelect, 'upazila', '');
+        });
+
+        upazilaSelect.addEventListener('change', function () {
+            filterSelect(localAreaSelect, 'upazila', this.value);
+        });
+
+        filterSelect(districtSelect, 'division', '');
+        filterSelect(upazilaSelect, 'district', '');
+        filterSelect(localAreaSelect, 'upazila', '');
+    </script>
 {% endblock %}

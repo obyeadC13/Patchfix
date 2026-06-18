@@ -3,119 +3,129 @@
 {% block title %}Issues - Patch Fix{% endblock %}
 
 {% block body %}
-<section class="pf-section">
-    <div class="container">
-        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
-            <div>
-                <div class="pf-label mb-2">Community reports</div>
-                <h1 class="pf-page-title mb-2">Reported issues</h1>
-                <p class="pf-muted mb-0">
-                    Browse civic problems submitted by the community and track what needs attention.
-                </p>
+    <section class="pf-section">
+        <div class="container">
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success rounded-4 mb-4">{{ message }}</div>
+            {% endfor %}
+
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger rounded-4 mb-4">{{ message }}</div>
+            {% endfor %}
+
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
+                <div>
+                    <div class="pf-label mb-2">Community reports</div>
+                    <h1 class="pf-page-title mb-2">Reported issues</h1>
+                    <p class="pf-muted mb-0">
+                        Browse civic problems submitted by the community and track what needs attention.
+                    </p>
+                </div>
+
+                <a href="{{ path('app_issue_new') }}" class="pf-btn-accent">Report Issue</a>
             </div>
 
-            <a href="{{ path('app_issue_new') }}" class="pf-btn-accent">Report Issue</a>
-        </div>
+            <div class="row g-3 mb-5">
+                <div class="col-6 col-lg-3">
+                    <div class="pf-stat-card">
+                        <div class="pf-stat-value">{{ stats.total }}</div>
+                        <div class="pf-stat-label">Total reports</div>
+                    </div>
+                </div>
 
-        <div class="row g-3 mb-5">
-            <div class="col-6 col-lg-3">
-                <div class="pf-stat-card">
-                    <div class="pf-stat-value">{{ stats.total }}</div>
-                    <div class="pf-stat-label">Total reports</div>
+                <div class="col-6 col-lg-3">
+                    <div class="pf-stat-card">
+                        <div class="pf-stat-value">{{ stats.submitted }}</div>
+                        <div class="pf-stat-label">Submitted</div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg-3">
+                    <div class="pf-stat-card">
+                        <div class="pf-stat-value">{{ stats.verified }}</div>
+                        <div class="pf-stat-label">Verified active</div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg-3">
+                    <div class="pf-stat-card">
+                        <div class="pf-stat-value">{{ stats.resolved }}</div>
+                        <div class="pf-stat-label">Resolved</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-6 col-lg-3">
-                <div class="pf-stat-card">
-                    <div class="pf-stat-value">{{ stats.submitted }}</div>
-                    <div class="pf-stat-label">Submitted</div>
+            {% if issues is empty %}
+                <div class="pf-card p-5 text-center">
+                    <h2 class="pf-h2 mb-3">No issues reported yet.</h2>
+                    <p class="pf-muted mb-4">Start by reporting a local problem in your area.</p>
+                    <a href="{{ path('app_issue_new') }}" class="pf-btn-accent">Report the first issue</a>
                 </div>
-            </div>
-
-            <div class="col-6 col-lg-3">
-                <div class="pf-stat-card">
-                    <div class="pf-stat-value">{{ stats.verified }}</div>
-                    <div class="pf-stat-label">Verified active</div>
-                </div>
-            </div>
-
-            <div class="col-6 col-lg-3">
-                <div class="pf-stat-card">
-                    <div class="pf-stat-value">{{ stats.resolved }}</div>
-                    <div class="pf-stat-label">Resolved</div>
-                </div>
-            </div>
-        </div>
-
-        {% if issues is empty %}
-            <div class="pf-card p-5 text-center">
-                <h2 class="pf-h2 mb-3">No issues reported yet.</h2>
-                <p class="pf-muted mb-4">Start by reporting a local problem in your area.</p>
-                <a href="{{ path('app_issue_new') }}" class="pf-btn-accent">Report the first issue</a>
-            </div>
-        {% else %}
-            <div class="row g-4">
-                {% for issue in issues %}
-                    <div class="col-12">
-                        <div class="pf-card pf-issue-card p-4">
-                            <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
-                                <div>
-                                    <div class="d-flex flex-wrap gap-2 mb-3">
+            {% else %}
+                <div class="row g-4">
+                    {% for issue in issues %}
+                        <div class="col-12">
+                            <div class="pf-card pf-issue-card p-4">
+                                <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+                                    <div>
+                                        <div class="d-flex flex-wrap gap-2 mb-3">
                                         <span class="pf-badge status-{{ issue.status|replace({'_': '-'}) }}">
                                             {{ issue.status|replace({'_': ' '})|title }}
                                         </span>
 
-                                        <span class="pf-badge priority-{{ issue.priority }}">
+                                            <span class="pf-badge priority-{{ issue.priority }}">
                                             {{ issue.priority|title }}
                                         </span>
-                                    </div>
+                                        </div>
 
-                                    <div class="small pf-muted mb-2">
-                                        {{ issue.report_reference }}
-                                    </div>
+                                        <div class="small pf-muted mb-2">
+                                            {{ issue.report_reference }}
+                                        </div>
 
-                                    <h2 class="h4 fw-bold mb-2">
-                                        <a href="{{ path('app_issue_show', { id: issue.id }) }}">
-                                            {{ issue.title }}
-                                        </a>
-                                    </h2>
+                                        <h2 class="h4 fw-bold mb-2">
+                                            <a href="{{ path('app_issue_show', { id: issue.id }) }}">
+                                                {{ issue.title }}
+                                            </a>
+                                        </h2>
 
-                                    <p class="pf-muted mb-3">
-                                        {{ issue.description|slice(0, 180) }}{% if issue.description|length > 180 %}...{% endif %}
-                                    </p>
+                                        <p class="pf-muted mb-3">
+                                            {{ issue.description|slice(0, 180) }}{% if issue.description|length > 180 %}...{% endif %}
+                                        </p>
 
-                                    <div class="d-flex flex-wrap gap-2 small pf-muted">
-                                        <span>{{ issue.category_name }}</span>
-                                        <span>·</span>
-                                        <span>{{ issue.division_name }}</span>
-                                        <span>·</span>
-                                        <span>{{ issue.district_name }}</span>
-                                        <span>·</span>
-                                        <span>{{ issue.upazila_name }}</span>
-
-                                        {% if issue.local_area_name %}
+                                        <div class="d-flex flex-wrap gap-2 small pf-muted">
+                                            <span>{{ issue.category_name }}</span>
                                             <span>·</span>
-                                            <span>{{ issue.local_area_name }}</span>
-                                        {% endif %}
+                                            <span>{{ issue.division_name }}</span>
+                                            <span>·</span>
+                                            <span>{{ issue.district_name }}</span>
+                                            <span>·</span>
+                                            <span>{{ issue.upazila_name }}</span>
+
+                                            {% if issue.local_area_name %}
+                                                <span>·</span>
+                                                <span>{{ issue.local_area_name }}</span>
+                                            {% endif %}
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="text-md-end flex-shrink-0">
-                                    <div class="pf-stat-value h3 mb-0">{{ issue.confirmation_count }}</div>
-                                    <div class="pf-stat-label mb-3">confirmations</div>
+                                    <div class="text-md-end flex-shrink-0">
+                                        <div class="pf-stat-value h3 mb-0">{{ issue.confirmation_count }}</div>
+                                        <div class="pf-stat-label mb-3">confirmations</div>
 
-                                    <div class="small pf-muted mb-3">
-                                        {{ issue.comment_count }} comments · {{ issue.photo_count }} photos
+                                        <div class="small pf-muted mb-3">
+                                            {{ issue.comment_count }} comments · {{ issue.photo_count }} photos
+                                        </div>
+
+                                        <a href="{{ path('app_issue_show', { id: issue.id }) }}" class="pf-btn-outline">
+                                            View details
+                                        </a>
                                     </div>
-
-                                    <a href="{{ path('app_issue_show', { id: issue.id }) }}" class="pf-btn-outline">View details</a>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    </div>
-</section>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
 {% endblock %}

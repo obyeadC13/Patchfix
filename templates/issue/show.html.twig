@@ -3,73 +3,181 @@
 {% block title %}{{ issue.title }} - Patch Fix{% endblock %}
 
 {% block body %}
-<section class="pf-section">
-    <div class="container">
-        <div class="mb-4">
-            <a href="{{ path('app_issues') }}" class="fw-bold">← Back to issues</a>
-        </div>
+    <section class="pf-section">
+        <div class="container">
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success rounded-4 mb-4">{{ message }}</div>
+            {% endfor %}
 
-        <div class="row g-4">
-            <div class="col-lg-8">
-                <div class="pf-card p-4 p-lg-5">
-                    <div class="d-flex flex-wrap gap-2 mb-3">
+            <div class="mb-4">
+                <a href="{{ path('app_issues') }}" class="fw-bold">← Back to issues</a>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="pf-card p-4 p-lg-5 mb-4">
+                        <div class="d-flex flex-wrap gap-2 mb-3">
                         <span class="pf-badge status-{{ issue.status|replace({'_': '-'}) }}">
                             {{ issue.status|replace({'_': ' '})|title }}
                         </span>
 
-                        <span class="pf-badge priority-{{ issue.priority }}">
+                            <span class="pf-badge priority-{{ issue.priority }}">
                             {{ issue.priority|title }}
                         </span>
+                        </div>
+
+                        <div class="small pf-muted mb-2">{{ issue.report_reference }}</div>
+
+                        <h1 class="pf-page-title mb-3">{{ issue.title }}</h1>
+
+                        <p class="pf-muted mb-4">
+                            {{ issue.category_name }} ·
+                            {{ issue.division_name }} ·
+                            {{ issue.district_name }} ·
+                            {{ issue.upazila_name }}
+
+                            {% if issue.local_area_name %}
+                                · {{ issue.local_area_name }}
+                            {% endif %}
+                        </p>
+
+                        <div class="pf-soft-card p-4 mb-4">
+                            <div class="pf-label mb-2">Issue description</div>
+                            <p class="mb-0">{{ issue.description }}</p>
+                        </div>
+
+                        <div class="pf-soft-card p-4">
+                            <div class="pf-label mb-2">Reported location</div>
+                            <p class="mb-0">{{ issue.address_text }}</p>
+                        </div>
                     </div>
 
-                    <div class="small pf-muted mb-2">{{ issue.report_reference }}</div>
+                    <div class="pf-card p-4 p-lg-5 mb-4">
+                        <div class="pf-label mb-2">Evidence</div>
+                        <h2 class="h4 fw-bold mb-4">Photos</h2>
 
-                    <h1 class="pf-page-title mb-3">{{ issue.title }}</h1>
+                        {% if photos is empty %}
+                            <div class="pf-soft-card p-4 text-center">
+                                <p class="pf-muted mb-0">No photos have been added for this issue yet.</p>
+                            </div>
+                        {% else %}
+                            <div class="row g-3">
+                                {% for photo in photos %}
+                                    <div class="col-md-6">
+                                        <div class="pf-soft-card p-3">
+                                            <img
+                                                src="{{ photo.image_url }}"
+                                                alt="{{ photo.caption ?: issue.title }}"
+                                                class="img-fluid rounded-4 mb-3"
+                                            >
 
-                    <p class="pf-muted mb-4">
-                        {{ issue.category_name }} ·
-                        {{ issue.division_name }} ·
-                        {{ issue.district_name }} ·
-                        {{ issue.upazila_name }}
-
-                        {% if issue.local_area_name %}
-                            · {{ issue.local_area_name }}
+                                            {% if photo.caption %}
+                                                <p class="mb-0 pf-muted">{{ photo.caption }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
                         {% endif %}
-                    </p>
+                    </div>
 
-                    <div class="pf-soft-card p-4">
-                        <div class="pf-label mb-2">Issue description</div>
-                        <p class="mb-0">{{ issue.description }}</p>
+                    <div class="pf-card p-4 p-lg-5 mb-4">
+                        <div class="pf-label mb-2">Discussion</div>
+                        <h2 class="h4 fw-bold mb-4">Community comments</h2>
+
+                        {% if comments is empty %}
+                            <div class="pf-soft-card p-4 text-center">
+                                <p class="pf-muted mb-0">No comments yet.</p>
+                            </div>
+                        {% else %}
+                            <div class="d-flex flex-column gap-3">
+                                {% for comment in comments %}
+                                    <div class="pf-soft-card p-4">
+                                        <div class="d-flex justify-content-between gap-3 mb-2">
+                                            <strong>{{ comment.author_name ?: 'Community member' }}</strong>
+                                            <span class="small pf-muted">
+                                            {{ comment.created_at|date('M d, Y') }}
+                                        </span>
+                                        </div>
+
+                                        <p class="mb-0">{{ comment.body }}</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
-            </div>
 
-            <div class="col-lg-4">
-                <div class="pf-card p-4">
-                    <h2 class="h5 fw-bold mb-3">Issue summary</h2>
+                <div class="col-lg-4">
+                    <div class="pf-card p-4 mb-4">
+                        <h2 class="h5 fw-bold mb-3">Issue summary</h2>
 
-                    <div class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="pf-muted">Status</span>
-                        <span class="fw-bold">{{ issue.status|replace({'_': ' '})|title }}</span>
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="pf-muted">Status</span>
+                            <span class="fw-bold">{{ issue.status|replace({'_': ' '})|title }}</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="pf-muted">Priority</span>
+                            <span class="fw-bold">{{ issue.priority|title }}</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="pf-muted">Confirmations</span>
+                            <span class="fw-bold">{{ issue.confirmation_count }}</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="pf-muted">Comments</span>
+                            <span class="fw-bold">{{ issue.comment_count }}</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="pf-muted">Photos</span>
+                            <span class="fw-bold">{{ issue.photo_count }}</span>
+                        </div>
+
+                        <div class="pt-3">
+                            <div class="pf-label mb-1">Submitted by</div>
+                            <p class="mb-3">{{ issue.submitted_by_name ?: 'Anonymous citizen' }}</p>
+
+                            <div class="pf-label mb-1">Assigned to</div>
+                            <p class="mb-0">{{ issue.assigned_to_name ?: 'Not assigned yet' }}</p>
+                        </div>
                     </div>
 
-                    <div class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="pf-muted">Priority</span>
-                        <span class="fw-bold">{{ issue.priority|title }}</span>
-                    </div>
+                    <div class="pf-card p-4">
+                        <div class="pf-label mb-2">Timeline</div>
+                        <h2 class="h5 fw-bold mb-3">Status history</h2>
 
-                    <div class="d-flex justify-content-between py-2 border-bottom">
-                        <span class="pf-muted">Confirmations</span>
-                        <span class="fw-bold">{{ issue.confirmation_count }}</span>
-                    </div>
+                        {% if statusLogs is empty %}
+                            <p class="pf-muted mb-0">No status updates yet.</p>
+                        {% else %}
+                            <div class="d-flex flex-column gap-3">
+                                {% for log in statusLogs %}
+                                    <div class="pf-soft-card p-3">
+                                        <div class="fw-bold mb-1">
+                                            {{ log.new_status|replace({'_': ' '})|title }}
+                                        </div>
 
-                    <div class="pt-3">
-                        <div class="pf-label mb-1">Address</div>
-                        <p class="mb-0">{{ issue.address_text }}</p>
+                                        <div class="small pf-muted mb-2">
+                                            {{ log.created_at|date('M d, Y h:i A') }}
+                                        </div>
+
+                                        {% if log.note %}
+                                            <p class="mb-2">{{ log.note }}</p>
+                                        {% endif %}
+
+                                        <div class="small pf-muted">
+                                            By {{ log.changed_by_name ?: 'System' }}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 {% endblock %}
